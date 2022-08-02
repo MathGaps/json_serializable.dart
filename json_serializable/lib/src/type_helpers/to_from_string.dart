@@ -15,8 +15,9 @@ final bigIntString = ToFromStringHelper(
 
 final dateTimeString = ToFromStringHelper(
   'DateTime.parse',
-  'toIso8601String()',
+  'toUtc().toIso8601String()',
   'DateTime',
+  parseSuffix: '.toLocal()',
 );
 
 final uriString = ToFromStringHelper(
@@ -42,9 +43,11 @@ class ToFromStringHelper {
   final String _toString;
   final String coreTypeName;
   final TypeChecker _checker;
+  final String? _parseSuffix;
 
-  ToFromStringHelper(this._parse, this._toString, this.coreTypeName)
-      : _checker = TypeChecker.fromUrl('dart:core#$coreTypeName');
+  ToFromStringHelper(this._parse, this._toString, this.coreTypeName, {String? parseSuffix})
+      : _checker = TypeChecker.fromUrl('dart:core#$coreTypeName'),
+        _parseSuffix = parseSuffix;
 
   bool matches(DartType type) => _checker.isExactlyType(type);
 
@@ -76,7 +79,10 @@ class ToFromStringHelper {
 
     final parseParam = isString ? expression : '$expression as String';
 
-    final output = '$_parse($parseParam)';
+    String output = '$_parse($parseParam)';
+    if (_parseSuffix != null) {
+      output = '$output$_parseSuffix';
+    }
 
     return nullable ? ifNullOrElse(expression, 'null', output) : output;
   }
