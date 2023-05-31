@@ -6,6 +6,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:test/test.dart';
 
 import '../test_utils.dart';
+import 'converter_examples.dart';
+import 'create_per_field_to_json_example.dart';
 import 'field_map_example.dart';
 import 'json_enum_example.dart';
 import 'json_test_common.dart' show Category, Platform, StatusCode;
@@ -357,5 +359,116 @@ void main() {
       privateModelFieldMap,
       {'fullName': 'full-name'},
     );
+  });
+
+  test(r'_$ModelPerFieldToJson', () {
+    expect(ModelPerFieldToJson.firstName('foo'), 'foo');
+
+    expect(ModelPerFieldToJson.enumValue(EnumValue.first), '1');
+    expect(ModelPerFieldToJson.enumValue(EnumValue.second), 'second');
+
+    expect(ModelPerFieldToJson.nested(Nested('foo')), {'value': 'foo'});
+    expect(ModelPerFieldToJson.nested(null), null);
+    expect(
+      ModelPerFieldToJson.nestedExcludeIfNull(Nested('foo')),
+      {'value': 'foo'},
+    );
+    expect(ModelPerFieldToJson.nestedExcludeIfNull(null), null);
+    expect(
+      ModelPerFieldToJson.nestedGeneric(GenericFactory(42, {'key': 21})),
+      {
+        'value': 42,
+        'map': {'key': 21},
+      },
+    );
+  });
+
+  test(r'_$GenericFactoryPerFieldToJson', () {
+    expect(
+      GenericFactoryPerFieldToJson.value<int>(42, (value) => '$value'),
+      '42',
+    );
+    expect(
+      GenericFactoryPerFieldToJson.value<String>('42', int.tryParse),
+      42,
+    );
+
+    expect(
+      GenericFactoryPerFieldToJson.map<int>({'foo': 21}, (value) => '$value'),
+      {'foo': '21'},
+    );
+    expect(
+      GenericFactoryPerFieldToJson.map<String>({'key': '42'}, int.tryParse),
+      {'key': 42},
+    );
+  });
+
+  group('classes with converters', () {
+    Issue1202RegressionClass roundTripIssue1202RegressionClass(int value) {
+      final instance = Issue1202RegressionClass(
+        normalNullableValue: value,
+        notNullableValueWithConverter: value,
+        notNullableValueWithNullableConverter: value,
+        value: Issue1202RegressionEnum.normalValue,
+        valueWithFunctions: value,
+        valueWithNullableFunctions: value,
+      );
+      return roundTripObject(instance, Issue1202RegressionClass.fromJson);
+    }
+
+    test('With default values', () {
+      final thing = roundTripIssue1202RegressionClass(42);
+
+      expect(thing.toJson(), {
+        'valueWithFunctions': '42',
+        'notNullableValueWithConverter': '42',
+        'value': 42,
+        'normalNullableValue': 42,
+      });
+    });
+
+    test('With non-default values', () {
+      final thing = roundTripIssue1202RegressionClass(43);
+
+      expect(thing.toJson(), {
+        'valueWithFunctions': '43',
+        'notNullableValueWithConverter': '43',
+        'value': 42,
+        'normalNullableValue': 43,
+        'notNullableValueWithNullableConverter': '43',
+        'valueWithNullableFunctions': '43',
+      });
+    });
+
+    test('enum with null value', () {
+      final instance = Issue1202RegressionClass(
+        normalNullableValue: 42,
+        notNullableValueWithConverter: 42,
+        notNullableValueWithNullableConverter: 42,
+        value: Issue1202RegressionEnum.nullValue,
+        valueWithFunctions: 42,
+        valueWithNullableFunctions: 42,
+      );
+
+      expect(instance.toJson(), {
+        'valueWithFunctions': '42',
+        'notNullableValueWithConverter': '42',
+        'normalNullableValue': 42,
+      });
+    });
+  });
+
+  test('Issue1226Regression', () {
+    final instance = Issue1226Regression(durationType: null);
+    expect(instance.toJson(), isEmpty);
+  });
+
+  test('Regression1229', () {
+    final instance = Regression1229();
+    expect(instance.toJson(), isEmpty);
+  });
+
+  test('value field index fun', () {
+    expect(enumValueFieldIndexValues, [0, 701, 2]);
   });
 }

@@ -68,7 +68,7 @@ class MapHelper extends TypeHelper<TypeHelperContextWithConfig> {
 
     _checkSafeKeyType(expression, keyArg);
 
-    final valueArgIsAny = valueArg.isDynamic ||
+    final valueArgIsAny = valueArg is DynamicType ||
         (valueArg.isDartCoreObject && valueArg.isNullableType);
     final isKeyStringable = _isKeyStringable(keyArg);
 
@@ -114,7 +114,7 @@ class MapHelper extends TypeHelper<TypeHelperContextWithConfig> {
     if (keyArg.isEnum) {
       keyUsage = context.deserialize(keyArg, _keyParam).toString();
     } else if (context.config.anyMap &&
-        !(keyArg.isDartCoreObject || keyArg.isDynamic)) {
+        !(keyArg.isDartCoreObject || keyArg is DynamicType)) {
       keyUsage = '$_keyParam as String';
     } else if (context.config.anyMap &&
         keyArg.isDartCoreObject &&
@@ -126,7 +126,8 @@ class MapHelper extends TypeHelper<TypeHelperContextWithConfig> {
 
     final toFromString = _forType(keyArg);
     if (toFromString != null) {
-      keyUsage = toFromString.deserialize(keyArg, keyUsage, false, true)!;
+      keyUsage =
+          toFromString.deserialize(keyArg, keyUsage, false, true).toString();
     }
 
     return '($expression $mapCast)$optionalQuestion.map( '
@@ -156,7 +157,7 @@ bool _isKeyStringable(DartType keyType) =>
 void _checkSafeKeyType(String expression, DartType keyArg) {
   // We're not going to handle converting key types at the moment
   // So the only safe types for key are dynamic/Object/String/enum
-  if (keyArg.isDynamic ||
+  if (keyArg is DynamicType ||
       (!keyArg.isNullableType &&
           (keyArg.isDartCoreObject ||
               coreStringTypeChecker.isExactlyType(keyArg) ||
@@ -167,7 +168,7 @@ void _checkSafeKeyType(String expression, DartType keyArg) {
   throw UnsupportedTypeError(
     keyArg,
     expression,
-    'Map keys must be one of: ${_allowedTypeNames.join(', ')}.',
+    'Map keys must be one of: ${allowedMapKeyTypes.join(', ')}.',
   );
 }
 
@@ -175,12 +176,13 @@ void _checkSafeKeyType(String expression, DartType keyArg) {
 ///
 /// Used in [_checkSafeKeyType] to provide a helpful error with unsupported
 /// types.
-Iterable<String> get _allowedTypeNames => const [
+List<String> get allowedMapKeyTypes => [
       'Object',
       'dynamic',
       'enum',
       'String',
-    ].followedBy(_instances.map((i) => i.coreTypeName));
+      ..._instances.map((i) => i.coreTypeName)
+    ];
 
 extension on DartType {
   bool get isSimpleJsonTypeNotDouble =>

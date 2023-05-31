@@ -85,7 +85,15 @@ KitchenSink _$KitchenSinkFromJson(Map<String, dynamic> json) => KitchenSink(
           SimpleObject.fromJson(json['simpleObject'] as Map<String, dynamic>)
       ..strictKeysObject = StrictKeysObject.fromJson(
           json['strictKeysObject'] as Map<String, dynamic>)
-      ..validatedPropertyNo42 = json['validatedPropertyNo42'] as int?;
+      ..validatedPropertyNo42 = json['validatedPropertyNo42'] as int?
+      ..recordField = _$recordConvertNullable(
+        json['recordField'],
+        ($jsonValue) => (
+          $jsonValue[r'$1'] as int,
+          $jsonValue[r'$2'] as String,
+          truth: $jsonValue['truth'] as bool,
+        ),
+      );
 
 Map<String, dynamic> _$KitchenSinkToJson(KitchenSink instance) {
   final val = <String, dynamic>{};
@@ -139,8 +147,23 @@ Map<String, dynamic> _$KitchenSinkToJson(KitchenSink instance) {
   val['simpleObject'] = instance.simpleObject;
   val['strictKeysObject'] = instance.strictKeysObject;
   writeNotNull('validatedPropertyNo42', instance.validatedPropertyNo42);
+  writeNotNull(
+      'recordField',
+      instance.recordField == null
+          ? null
+          : {
+              r'$1': instance.recordField!.$1,
+              r'$2': instance.recordField!.$2,
+              'truth': instance.recordField!.truth,
+            });
   return val;
 }
+
+$Rec? _$recordConvertNullable<$Rec>(
+  Object? value,
+  $Rec Function(Map) convert,
+) =>
+    value == null ? null : convert(value as Map<String, dynamic>);
 
 JsonConverterTestClass _$JsonConverterTestClassFromJson(
         Map<String, dynamic> json) =>
@@ -190,7 +213,7 @@ Map<String, dynamic> _$JsonConverterTestClassToJson(
   val['durationList'] = instance.durationList
       .map(const DurationMillisecondConverter().toJson)
       .toList();
-  writeNotNull('bigInt', const BigIntStringConverter().toJson(instance.bigInt));
+  val['bigInt'] = const BigIntStringConverter().toJson(instance.bigInt);
   val['bigIntMap'] = instance.bigIntMap
       .map((k, e) => MapEntry(k, const BigIntStringConverter().toJson(e)));
   writeNotNull(
@@ -247,19 +270,10 @@ JsonConverterGeneric<S, T, U> _$JsonConverterGenericFromJson<S, T, U>(
     );
 
 Map<String, dynamic> _$JsonConverterGenericToJson<S, T, U>(
-    JsonConverterGeneric<S, T, U> instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('item', GenericConverter<S>().toJson(instance.item));
-  val['itemList'] =
-      instance.itemList.map(GenericConverter<T>().toJson).toList();
-  val['itemMap'] = instance.itemMap
-      .map((k, e) => MapEntry(k, GenericConverter<U>().toJson(e)));
-  return val;
-}
+        JsonConverterGeneric<S, T, U> instance) =>
+    <String, dynamic>{
+      'item': GenericConverter<S>().toJson(instance.item),
+      'itemList': instance.itemList.map(GenericConverter<T>().toJson).toList(),
+      'itemMap': instance.itemMap
+          .map((k, e) => MapEntry(k, GenericConverter<U>().toJson(e))),
+    };

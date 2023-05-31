@@ -21,7 +21,7 @@ class CreateFactoryResult {
   CreateFactoryResult(this.output, this.usedFields);
 }
 
-abstract class DecodeHelper implements HelperCore {
+mixin DecodeHelper implements HelperCore {
   CreateFactoryResult createFactory(
     Map<String, FieldElement> accessibleFields,
     Map<String, String> unavailableReasons,
@@ -31,7 +31,7 @@ abstract class DecodeHelper implements HelperCore {
 
     final mapType = config.anyMap ? 'Map' : 'Map<String, dynamic>';
     buffer.write('$targetClassReference '
-        '${prefix}FromJson${genericClassArgumentsImpl(true)}'
+        '${prefix}FromJson${genericClassArgumentsImpl(withConstraints: true)}'
         '($mapType json');
 
     if (config.genericArgumentFactories) {
@@ -278,8 +278,7 @@ _ConstructorData _writeConstructorInvocation(
 
   for (final arg in ctor.parameters) {
     if (!availableConstructorParameters.contains(arg.name)) {
-      // ignore: deprecated_member_use
-      if (arg.isNotOptional) {
+      if (arg.isRequired) {
         var msg = 'Cannot populate the required constructor '
             'argument: ${arg.name}.';
 

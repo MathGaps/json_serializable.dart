@@ -9,11 +9,12 @@ import 'package:json_annotation/json_annotation.dart';
 import 'default_value_interface.dart' as dvi hide Greek;
 import 'default_value_interface.dart'
     show
-        Greek,
         ConstClass,
         ConstClassConverter,
+        Greek,
         constClassFromJson,
-        constClassToJson;
+        constClassToJson,
+        intDefaultValueFunction;
 
 part 'default_value.g.dart';
 
@@ -72,6 +73,15 @@ class DefaultValue implements dvi.DefaultValue {
   @JsonKey(fromJson: constClassFromJson, toJson: constClassToJson)
   ConstClass valueFromFunction;
 
+  @JsonKey(defaultValue: intDefaultValueFunction)
+  int intDefaultValueFromFunction;
+
+  @JsonKey(defaultValue: ConstClass.new)
+  ConstClass valueFromDefaultValueDefaultConstructor;
+
+  @JsonKey(defaultValue: ConstClass.easy)
+  ConstClass valueFromDefaultValueNamedConstructor;
+
   DefaultValue(
     this.fieldBool,
     this.fieldString,
@@ -89,6 +99,9 @@ class DefaultValue implements dvi.DefaultValue {
     this.constClass = const ConstClass('value'),
     this.valueFromConverter = const ConstClass('value'),
     this.valueFromFunction = const ConstClass('value'),
+    required this.intDefaultValueFromFunction,
+    required this.valueFromDefaultValueDefaultConstructor,
+    required this.valueFromDefaultValueNamedConstructor,
   });
 
   factory DefaultValue.fromJson(Map<String, dynamic> json) =>

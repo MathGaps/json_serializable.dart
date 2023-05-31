@@ -4,6 +4,7 @@
 
 // ignore_for_file: prefer_const_declarations
 @TestOn('vm')
+library test;
 
 import 'dart:convert';
 
@@ -95,12 +96,15 @@ final _defaultInput = <String, Object?>{
 
 final _defaultOutput = {
   'value': _defaultValue,
+  'withDefault': _defaultValue,
 };
 
 final _nullableDefaultOutput = {
   'value': null,
+  'withDefault': _defaultValue,
 };
 
 final _nonDefaultJson = {
   'value': _altValue,
+  'withDefault': _altValue,
 };

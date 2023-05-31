@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:collection/collection.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -11,6 +10,7 @@ import 'package:source_gen/source_gen.dart';
 import 'package:source_helper/source_helper.dart';
 
 import '../default_container.dart';
+import '../lambda_result.dart';
 import '../type_helper.dart';
 import '../utils.dart';
 import 'config_types.dart';
@@ -130,9 +130,12 @@ class JsonHelper extends TypeHelper<TypeHelperContextWithConfig> {
 
     // TODO: the type could be imported from a library with a prefix!
     // https://github.com/google/json_serializable.dart/issues/19
-    output = '${typeToCode(targetType.promoteNonNullable())}.fromJson($output)';
+    final lambda = LambdaResult(
+      output,
+      '${typeToCode(targetType.promoteNonNullable())}.fromJson',
+    );
 
-    return DefaultContainer(expression, output);
+    return DefaultContainer(expression, lambda);
   }
 }
 
@@ -178,7 +181,7 @@ TypeParameterType _decodeHelper(
       final funcParamType = type.normalParameterTypes.single;
 
       if ((funcParamType.isDartCoreObject && funcParamType.isNullableType) ||
-          funcParamType.isDynamic) {
+          funcParamType is DynamicType) {
         return funcReturnType as TypeParameterType;
       }
     }
@@ -201,7 +204,7 @@ TypeParameterType _encodeHelper(
   final type = param.type;
 
   if (type is FunctionType &&
-      (type.returnType.isDartCoreObject || type.returnType.isDynamic) &&
+      (type.returnType.isDartCoreObject || type.returnType is DynamicType) &&
       type.normalParameterTypes.length == 1) {
     final funcParamType = type.normalParameterTypes.single;
 
@@ -263,8 +266,7 @@ InterfaceType? _instantiate(
 
   return ctorParamType.element.instantiate(
     typeArguments: argTypes.cast<DartType>(),
-    // TODO: not 100% sure nullabilitySuffix is right... Works for now
-    nullabilitySuffix: NullabilitySuffix.none,
+    nullabilitySuffix: ctorParamType.nullabilitySuffix,
   );
 }
 
@@ -283,7 +285,7 @@ ClassConfig? _annotation(ClassConfig config, InterfaceType source) {
   return mergeConfig(
     config,
     ConstantReader(annotations.single),
-    classElement: source.element,
+    classElement: source.element as ClassElement,
   );
 }
 
