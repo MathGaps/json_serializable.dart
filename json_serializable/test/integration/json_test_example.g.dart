@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: lines_longer_than_80_chars, text_direction_code_point_in_literal
+// ignore_for_file: lines_longer_than_80_chars, text_direction_code_point_in_literal, inference_failure_on_function_invocation, inference_failure_on_collection_literal
 
 part of 'json_test_example.dart';
 
@@ -29,7 +29,8 @@ Person _$PersonFromJson(Map<String, dynamic> json) => Person(
         (k, e) => MapEntry(k, $enumDecode(_$CategoryEnumMap, e)),
       )
       ..categoryCounts = (json['categoryCounts'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry($enumDecode(_$CategoryEnumMap, k), e as int),
+        (k, e) =>
+            MapEntry($enumDecode(_$CategoryEnumMap, k), (e as num).toInt()),
       );
 
 Map<String, dynamic> _$PersonToJson(Person instance) => <String, dynamic>{
@@ -66,11 +67,11 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
     (json['items'] as List<dynamic>?)
         ?.map((e) => Item.fromJson(e as Map<String, dynamic>)),
   )
-    ..count = json['count'] as int?
+    ..count = (json['count'] as num?)?.toInt()
     ..isRushed = json['isRushed'] as bool?
     ..duration = json['duration'] == null
         ? null
-        : Duration(microseconds: json['duration'] as int)
+        : Duration(microseconds: (json['duration'] as num).toInt())
     ..platform = json['platform'] == null
         ? null
         : Platform.fromJson(json['platform'] as String)
@@ -84,26 +85,17 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
         StatusCode.success;
 }
 
-Map<String, dynamic> _$OrderToJson(Order instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('count', instance.count);
-  val['isRushed'] = instance.isRushed;
-  val['duration'] = instance.duration?.inMicroseconds;
-  val['category'] = _$CategoryEnumMap[instance.category];
-  val['items'] = instance.items;
-  val['platform'] = instance.platform;
-  val['altPlatforms'] = instance.altPlatforms;
-  val['homepage'] = instance.homepage?.toString();
-  val['status_code'] = _$StatusCodeEnumMap[instance.statusCode];
-  return val;
-}
+Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
+      if (instance.count case final value?) 'count': value,
+      'isRushed': instance.isRushed,
+      'duration': instance.duration?.inMicroseconds,
+      'category': _$CategoryEnumMap[instance.category],
+      'items': instance.items,
+      'platform': instance.platform,
+      'altPlatforms': instance.altPlatforms,
+      'homepage': instance.homepage?.toString(),
+      'status_code': _$StatusCodeEnumMap[instance.statusCode],
+    };
 
 const _$StatusCodeEnumMap = {
   StatusCode.success: 200,
@@ -113,36 +105,28 @@ const _$StatusCodeEnumMap = {
 };
 
 Item _$ItemFromJson(Map<String, dynamic> json) => Item(
-      json['price'] as int?,
+      (json['price'] as num?)?.toInt(),
     )
-      ..itemNumber = json['item-number'] as int?
+      ..itemNumber = (json['item-number'] as num?)?.toInt()
       ..saleDates = (json['saleDates'] as List<dynamic>?)
           ?.map((e) => DateTime.parse(e as String))
           .toList()
-      ..rates = (json['rates'] as List<dynamic>?)?.map((e) => e as int).toList()
+      ..rates = (json['rates'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList()
       ..geoPoint = _fromJsonGeoPoint(json['geoPoint'] as Map<String, dynamic>?);
 
-Map<String, dynamic> _$ItemToJson(Item instance) {
-  final val = <String, dynamic>{
-    'price': instance.price,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('item-number', instance.itemNumber);
-  val['saleDates'] =
-      instance.saleDates?.map((e) => e.toIso8601String()).toList();
-  val['rates'] = instance.rates;
-  val['geoPoint'] = _toJsonGeoPoint(instance.geoPoint);
-  return val;
-}
+Map<String, dynamic> _$ItemToJson(Item instance) => <String, dynamic>{
+      'price': instance.price,
+      if (instance.itemNumber case final value?) 'item-number': value,
+      'saleDates': instance.saleDates?.map((e) => e.toIso8601String()).toList(),
+      'rates': instance.rates,
+      'geoPoint': _toJsonGeoPoint(instance.geoPoint),
+    };
 
 Numbers _$NumbersFromJson(Map<String, dynamic> json) => Numbers()
-  ..ints = (json['ints'] as List<dynamic>?)?.map((e) => e as int).toList()
+  ..ints =
+      (json['ints'] as List<dynamic>?)?.map((e) => (e as num).toInt()).toList()
   ..nums = (json['nums'] as List<dynamic>?)?.map((e) => e as num).toList()
   ..doubles = (json['doubles'] as List<dynamic>?)
       ?.map((e) => (e as num).toDouble())
@@ -150,8 +134,10 @@ Numbers _$NumbersFromJson(Map<String, dynamic> json) => Numbers()
   ..nnDoubles = (json['nnDoubles'] as List<dynamic>?)
       ?.map((e) => (e as num).toDouble())
       .toList()
-  ..duration = durationFromInt(json['duration'] as int?)
-  ..date = dateTimeFromEpochUs(json['date'] as int?);
+  ..duration = durationFromInt((json['duration'] as num?)?.toInt())
+  ..doubleAsString =
+      stringFromDouble((json['doubleAsString'] as num?)?.toDouble())
+  ..date = dateTimeFromEpochUs((json['date'] as num?)?.toInt());
 
 Map<String, dynamic> _$NumbersToJson(Numbers instance) => <String, dynamic>{
       'ints': instance.ints,
@@ -159,22 +145,23 @@ Map<String, dynamic> _$NumbersToJson(Numbers instance) => <String, dynamic>{
       'doubles': instance.doubles,
       'nnDoubles': instance.nnDoubles,
       'duration': durationToInt(instance.duration),
+      'doubleAsString': stringToDouble(instance.doubleAsString),
       'date': dateTimeToEpochUs(instance.date),
     };
 
 MapKeyVariety _$MapKeyVarietyFromJson(Map<String, dynamic> json) =>
     MapKeyVariety()
       ..intIntMap = (json['intIntMap'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(int.parse(k), e as int),
+        (k, e) => MapEntry(int.parse(k), (e as num).toInt()),
       )
       ..uriIntMap = (json['uriIntMap'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(Uri.parse(k), e as int),
+        (k, e) => MapEntry(Uri.parse(k), (e as num).toInt()),
       )
       ..dateTimeIntMap = (json['dateTimeIntMap'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(DateTime.parse(k), e as int),
+        (k, e) => MapEntry(DateTime.parse(k), (e as num).toInt()),
       )
       ..bigIntMap = (json['bigIntMap'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(BigInt.parse(k), e as int),
+        (k, e) => MapEntry(BigInt.parse(k), (e as num).toInt()),
       );
 
 Map<String, dynamic> _$MapKeyVarietyToJson(MapKeyVariety instance) =>
@@ -204,7 +191,7 @@ UnknownEnumValue _$UnknownEnumValueFromJson(Map<String, dynamic> json) =>
 
 PrivateConstructor _$PrivateConstructorFromJson(Map<String, dynamic> json) =>
     PrivateConstructor._(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['value'] as String,
     );
 

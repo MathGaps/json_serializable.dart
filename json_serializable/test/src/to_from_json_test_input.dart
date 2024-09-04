@@ -122,7 +122,7 @@ class Reproduce869NullableGenericTypeWithDefault {
 }
 
 List<int>? _fromList(List? pairs) =>
-    pairs?.map((it) => it as int).toList(growable: false);
+    pairs?.map((it) => (it as num).toInt()).toList(growable: false);
 
 List<List>? _toList(List<int>? pairs) =>
     pairs?.map((it) => [it]).toList(growable: false);
@@ -175,18 +175,11 @@ String? _toStringNullOnEmpty(String input) => input.isEmpty ? null : input;
 @ShouldGenerate(
   r'''
 Map<String, dynamic> _$ToJsonNullableFalseIncludeIfNullFalseToJson(
-    ToJsonNullableFalseIncludeIfNullFalse instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('field', _toStringNullOnEmpty(instance.field));
-  return val;
-}
+        ToJsonNullableFalseIncludeIfNullFalse instance) =>
+    <String, dynamic>{
+      if (_toStringNullOnEmpty(instance.field) case final value?)
+        'field': value,
+    };
 ''',
 )
 @JsonSerializable(createFactory: false)

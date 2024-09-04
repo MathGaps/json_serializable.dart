@@ -1,3 +1,20 @@
+## 6.9.0-wip
+
+- Use conditional map syntax to clean up `null` handling in `toJson` functions.
+- Require Dart 3.5
+
+## 6.8.0
+
+- Add type arguments to `Map` literals used for `Record` serialization.
+- Add support for `JsonSerializable(createJsonKeys: true)`.
+  ([#1401](https://github.com/google/json_serializable.dart/pull/1401))
+- Handle decoding an `int` value from a `double` literal. 
+  This now matches the behavior of `double` values being encoded as `int`.
+
+## 6.7.1
+
+- Support the latest `package:analyzer`.
+
 ## 6.7.0
 
 - Support `Record` types.

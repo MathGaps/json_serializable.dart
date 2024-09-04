@@ -7,7 +7,7 @@
 /// [T] is the data type you'd like to convert to and from.
 ///
 /// [S] is the type of the value stored in JSON. It must be a valid JSON type
-/// such as [String], [int], or [Map<String, dynamic>].
+/// such as [String], [int], or [Map]`<String, dynamic>`.
 ///
 ///
 /// [JsonConverter]s can be placed either on the class:
@@ -19,7 +19,9 @@
 ///
 /// @JsonSerializable()
 /// @MyJsonConverter()
-/// class Example {}
+/// class Example {
+///   final Value property;
+/// }
 /// ```
 ///
 /// or on a property:
@@ -36,7 +38,9 @@
 ///
 /// ```dart
 /// @JsonSerializable(converters: [MyJsonConverter()])
-/// class Example {}
+/// class Example {
+///   final Value property;
+/// }
 /// ```
 abstract class JsonConverter<T, S> {
   const JsonConverter();

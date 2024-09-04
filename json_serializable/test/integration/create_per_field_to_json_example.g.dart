@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: lines_longer_than_80_chars, text_direction_code_point_in_literal
+// ignore_for_file: lines_longer_than_80_chars, text_direction_code_point_in_literal, inference_failure_on_function_invocation, inference_failure_on_collection_literal
 
 part of 'create_per_field_to_json_example.dart';
 
@@ -23,7 +23,7 @@ Model _$ModelFromJson(Map<String, dynamic> json) => Model(
           ? null
           : GenericFactory<int>.fromJson(
               json['nestedGeneric'] as Map<String, dynamic>,
-              (value) => value as int),
+              (value) => (value as num).toInt()),
     );
 
 // ignore: unused_element
@@ -45,26 +45,17 @@ abstract class _$ModelPerFieldToJson {
   static Object? nestedExcludeIfNull(Nested? instance) => instance?.toJson();
 }
 
-Map<String, dynamic> _$ModelToJson(Model instance) {
-  final val = <String, dynamic>{
-    'firstName': instance.firstName,
-    'lastName': instance.lastName,
-    'enumValue': _$EnumValueEnumMap[instance.enumValue],
-    'nested': instance.nested?.toJson(),
-    'nestedGeneric': instance.nestedGeneric?.toJson(
-      (value) => value,
-    ),
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('nestedExcludeIfNull', instance.nestedExcludeIfNull?.toJson());
-  return val;
-}
+Map<String, dynamic> _$ModelToJson(Model instance) => <String, dynamic>{
+      'firstName': instance.firstName,
+      'lastName': instance.lastName,
+      'enumValue': _$EnumValueEnumMap[instance.enumValue],
+      'nested': instance.nested?.toJson(),
+      'nestedGeneric': instance.nestedGeneric?.toJson(
+        (value) => value,
+      ),
+      if (instance.nestedExcludeIfNull?.toJson() case final value?)
+        'nestedExcludeIfNull': value,
+    };
 
 const _$EnumValueEnumMap = {
   EnumValue.first: '1',
